@@ -1,0 +1,18 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+
+		"files.exclude": {
+            "**/.git": true,         // this is a default value
+            "**/.DS_Store": true,    // this is a default value
+
+            "JackalTourGuide/**": true, // this excludes everything in JackalTourGuide folder
+            "JackalNoetic/**": true, // this excludes everything in JackalTourGuide folder
+		}
+
+	}
+}
