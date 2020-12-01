@@ -39,20 +39,34 @@ gazport=$(($rosport+1))
 export ROSPORT=$(($ROSPORT+2))
 echo "export ROSPORT=$ROSPORT" >> ~/.bashrc
 
+volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
+-v /home/$USER/Experiments/2-MyhalSim/Simulation:/home/$USER/Myhal_Simulation "
+
+
+XSOCK=/tmp/.X11-unix
+XAUTH=/tmp/.docker.xauth
+touch $XAUTH
+xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+
+other_args="-v $XSOCK:$XSOCK:rw \
+    -v $XAUTH:$XAUTH:rw \
+    -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
+    --net=host \
+	-e XAUTHORITY=${XAUTH} \
+    -e DISPLAY=$DISPLAY \
+    -e ROS_MASTER_URI=http://$HOSTNAME:$rosport \
+    -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
+    -e ROSPORT=$rosport "
+
+
+container_name="$USER-melodic-$ROSPORT"
+
 
 if [ "$detach" = true ] ; then
     docker run -d --gpus all -it --rm --shm-size=64g \
-    -v /raid/Myhal_Simulation/Simulator/JackalTourGuide:/home/$USER/catkin_ws \
-    -v /raid/Myhal_Simulation:/home/$USER/Myhal_Simulation \
-    -v /tmp/.X11-unix:/tmp/.X11-unix \
-    -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
-    --net=host \
-    -e XAUTHORITY=/home/$USER/.Xauthority \
-    -e DISPLAY=$DISPLAY \
-    -e ROS_MASTER_URI=http://obelisk:$rosport \
-    -e GAZEBO_MASTER_URI=http://obelisk:$gazport \
-    -e ROSPORT=$rosport \
-    --name "$USER-melodic-$ROSPORT" \
+    $volumes \
+    $other_args \
+    --name $container_name \
     docker_ros_melodic_$USER \
     $command 
 else
@@ -60,36 +74,20 @@ else
     if [ "$nohup" = true ] ; then
 
         docker run --gpus all -i --rm --shm-size=64g \
-        -v /raid/Myhal_Simulation/Simulator/JackalTourGuide:/home/$USER/catkin_ws \
-        -v /raid/Myhal_Simulation:/home/$USER/Myhal_Simulation \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
-        --net=host \
-        -e XAUTHORITY=/home/$USER/.Xauthority \
-        -e DISPLAY=$DISPLAY \
-        -e ROS_MASTER_URI=http://obelisk:$rosport \
-        -e GAZEBO_MASTER_URI=http://obelisk:$gazport \
-        -e ROSPORT=$rosport \
-        --name "$USER-melodic-$ROSPORT" \
+        $volumes \
+        $other_args \
+        --name $container_name \
         docker_ros_melodic_$USER \
-        $command
+        $command 
 
     else
 
-        docker run --gpus all -it --rm --shm-size=64g \
-        -v /raid/Myhal_Simulation/Simulator/JackalTourGuide:/home/$USER/catkin_ws \
-        -v /raid/Myhal_Simulation:/home/$USER/Myhal_Simulation \
-        -v /tmp/.X11-unix:/tmp/.X11-unix \
-        -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
-        --net=host \
-        -e XAUTHORITY=/home/$USER/.Xauthority \
-        -e DISPLAY=$DISPLAY \
-        -e ROS_MASTER_URI=http://obelisk:$rosport \
-        -e GAZEBO_MASTER_URI=http://obelisk:$gazport \
-        -e ROSPORT=$rosport \
-        --name "$USER-melodic-$ROSPORT" \
+        nvidia-docker run --gpus all -it --rm --shm-size=64g --runtime=nvidia \
+        $volumes \
+        $other_args \
+        --name $container_name \
         docker_ros_melodic_$USER \
-        $command
+        $command 
     fi
 fi
 

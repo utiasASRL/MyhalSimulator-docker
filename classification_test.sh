@@ -37,33 +37,32 @@ gazport=$(($rosport+1))
 export ROSPORT=$(($ROSPORT+2))
 echo "export ROSPORT=$ROSPORT" >> ~/.bashrc
 
+volumes_melodic="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
+-v /home/$USER/Experiments/2-MyhalSim/Simulation:/home/$USER/Myhal_Simulation"
+
+volumes_noetic="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator-DeepPreds:/home/$USER/catkin_ws \
+-v /home/$USER/Experiments/2-MyhalSim/Simulation:/home/$USER/Myhal_Simulation \
+-v /home/$USER/Experiments/2-MyhalSim/KPConv-MyhalSimData:/home/$USER/Data/MyhalSim "
+
+other_args="-v /tmp/.X11-unix:/tmp/.X11-unix \
+    -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
+    --net=host \
+    -e XAUTHORITY=/home/$USER/.Xauthority \
+    -e DISPLAY=$DISPLAY \
+    -e ROS_MASTER_URI=http://obelisk:$rosport \
+    -e GAZEBO_MASTER_URI=http://obelisk:$gazport \
+    -e ROSPORT=$rosport "
+
 
 docker run -d --gpus all -i --rm --shm-size=64g \
--v /raid/Myhal_Simulation:/home/$USER/Myhal_Simulation \
--v /raid/hth/Data/MyhalSim:/home/$USER/Data/MyhalSim \
--v /raid/Myhal_Simulation/Simulator/JackalNoetic:/home/$USER/catkin_ws \
--v /tmp/.X11-unix:/tmp/.X11-unix \
--v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
---net=host \
--e XAUTHORITY=/home/$USER/.Xauthority \
--e DISPLAY=$DISPLAY \
--e ROS_MASTER_URI=http://obelisk:$rosport \
--e GAZEBO_MASTER_URI=http://obelisk:$gazport \
--e ROSPORT=$rosport \
+$volumes_noetic \
+$other_args \
 --name "$USER-noetic-$ROSPORT" \
 docker_ros_noetic_$USER \
 "./classifier.sh" &&
 docker run --gpus all -i --rm --shm-size=64g \
--v /raid/Myhal_Simulation/Simulator/JackalTourGuide:/home/$USER/catkin_ws \
--v /raid/Myhal_Simulation:/home/$USER/Myhal_Simulation \
--v /tmp/.X11-unix:/tmp/.X11-unix \
--v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
---net=host \
--e XAUTHORITY=/home/$USER/.Xauthority \
--e DISPLAY=$DISPLAY \
--e ROS_MASTER_URI=http://obelisk:$rosport \
--e GAZEBO_MASTER_URI=http://obelisk:$gazport \
--e ROSPORT=$rosport \
+$volumes_melodic \
+$other_args \
 --name "$USER-melodic-$ROSPORT" \
 docker_ros_melodic_$USER \
 $command
