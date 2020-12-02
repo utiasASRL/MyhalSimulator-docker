@@ -77,12 +77,6 @@ other_args="-v $XSOCK:$XSOCK \
     -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
     -e ROSPORT=$rosport "
 
-echo "*******************************"
-echo "*******************************"
-echo $docker_args
-echo "*******************************"
-echo "*******************************"
-
 # Go (Example of commad: ./master.sh -ve -m 2 -p Sc1_params -t A_tour)
 docker run $docker_args \
 $volumes \
