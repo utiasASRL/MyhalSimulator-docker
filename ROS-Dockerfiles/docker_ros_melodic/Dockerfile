@@ -1,4 +1,5 @@
-FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
+#FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
+FROM nvcr.io/nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
@@ -111,7 +112,7 @@ ENV USER=$username0
 #ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
 
 # Some QT-Apps/Gazebo don't show controls without this
-#ENV QT_X11_NO_MITSHM 1
+ENV QT_X11_NO_MITSHM 1
 
 COPY --chown=$username0 entrypoint.sh /home/entrypoint.sh
 RUN ipython profile create

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+########
+# Init #
+########
+
 echo ""
 echo "Running ros-melodic docker. Remember you can set ROSPORT to a custom value"
 echo ""
@@ -39,18 +43,33 @@ gazport=$(($rosport+1))
 export ROSPORT=$(($ROSPORT+2))
 echo "export ROSPORT=$ROSPORT" >> ~/.bashrc
 
+
+##########################
+# Start docker container #
+##########################
+
+# Docker run arguments (depending if we run detached or not)
+if [ "$detach" = true ] ; then
+    docker_args="-d --gpus all -it --rm --shm-size=64g "
+else
+    if [ "$nohup" = true ] ; then
+        docker_args="--gpus all -i --rm --shm-size=64g " 
+    else
+        docker_args="--gpus all -it --rm --shm-size=64g "
+    fi
+fi
+
+docker_args="-it --rm --runtime=nvidia "
+
+# Volumes (modify with your own path here)
 volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
 -v /home/$USER/Experiments/2-MyhalSim/Simulation:/home/$USER/Myhal_Simulation "
 
-
+# Additional arguments to be able to open GUI
 XSOCK=/tmp/.X11-unix
-XAUTH=/tmp/.docker.xauth
-touch $XAUTH
-xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
-
-other_args="-v $XSOCK:$XSOCK:rw \
-    -v $XAUTH:$XAUTH:rw \
-    -v /home/$USER/.Xauthority:/home/$USER/.Xauthority \
+XAUTH=/home/$USER/.Xauthority
+other_args="-v $XSOCK:$XSOCK \
+    -v $XAUTH:$XAUTH \
     --net=host \
 	-e XAUTHORITY=${XAUTH} \
     -e DISPLAY=$DISPLAY \
@@ -58,39 +77,21 @@ other_args="-v $XSOCK:$XSOCK:rw \
     -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
     -e ROSPORT=$rosport "
 
+echo "*******************************"
+echo "*******************************"
+echo $docker_args
+echo "*******************************"
+echo "*******************************"
 
-container_name="$USER-melodic-$ROSPORT"
+# Go (Example of commad: ./master.sh -ve -m 2 -p Sc1_params -t A_tour)
+docker run $docker_args \
+$volumes \
+$other_args \
+--name "$USER-melodic-$ROSPORT" \
+docker_ros_melodic_$USER \
+$command 
 
-
-if [ "$detach" = true ] ; then
-    docker run -d --gpus all -it --rm --shm-size=64g \
-    $volumes \
-    $other_args \
-    --name $container_name \
-    docker_ros_melodic_$USER \
-    $command 
-else
-
-    if [ "$nohup" = true ] ; then
-
-        docker run --gpus all -i --rm --shm-size=64g \
-        $volumes \
-        $other_args \
-        --name $container_name \
-        docker_ros_melodic_$USER \
-        $command 
-
-    else
-
-        nvidia-docker run --gpus all -it --rm --shm-size=64g --runtime=nvidia \
-        $volumes \
-        $other_args \
-        --name $container_name \
-        docker_ros_melodic_$USER \
-        $command 
-    fi
-fi
-
+# Finish
 echo "Final Sourcing ..."
 source ~/.bashrc
 
