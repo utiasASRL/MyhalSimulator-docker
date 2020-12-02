@@ -59,7 +59,7 @@ else
     fi
 fi
 
-docker_args="-it --rm --runtime=nvidia "
+#docker_args="-it --rm --runtime=nvidia "
 
 # Volumes (modify with your own path here)
 volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
@@ -68,16 +68,6 @@ volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin
 # Additional arguments to be able to open GUI
 XSOCK=/tmp/.X11-unix
 XAUTH=/home/$USER/.Xauthority
-other_args="-v $XSOCK:$XSOCK \
-    -v $XAUTH:$XAUTH \
-    --net=host \
-	-e XAUTHORITY=${XAUTH} \
-    -e DISPLAY=$DISPLAY \
-    -e ROS_MASTER_URI=http://$HOSTNAME:$rosport \
-    -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
-    -e ROSPORT=$rosport "
-
-#rosport=11311
 other_args="-v $XSOCK:$XSOCK \
     -v $XAUTH:$XAUTH \
     --net=host \
