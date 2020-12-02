@@ -59,7 +59,7 @@ else
     fi
 fi
 
-docker_args="-it --rm --runtime=nvidia "
+#docker_args="-it --rm --runtime=nvidia "
 
 # Volumes (modify with your own path here)
 volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
