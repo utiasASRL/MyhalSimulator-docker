@@ -59,7 +59,7 @@ else
     fi
 fi
 
-#docker_args="-it --rm --runtime=nvidia "
+docker_args="-it --rm --runtime=nvidia "
 
 # Volumes (modify with your own path here)
 volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
@@ -76,6 +76,18 @@ other_args="-v $XSOCK:$XSOCK \
     -e ROS_MASTER_URI=http://$HOSTNAME:$rosport \
     -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
     -e ROSPORT=$rosport "
+
+#rosport=11311
+other_args="-v $XSOCK:$XSOCK \
+    -v $XAUTH:$XAUTH \
+    --net=host \
+    --privileged \
+	-e XAUTHORITY=${XAUTH} \
+    -e DISPLAY=$DISPLAY \
+    -e ROS_MASTER_URI=http://$HOSTNAME:$rosport \
+    -e GAZEBO_MASTER_URI=http://$HOSTNAME:$gazport \
+    -e ROSPORT=$rosport "
+
 
 # Go (Example of commad: ./master.sh -ve -m 2 -p Sc1_params -t A_tour)
 docker run $docker_args \
