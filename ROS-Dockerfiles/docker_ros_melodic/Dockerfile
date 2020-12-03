@@ -1,5 +1,4 @@
-#FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
-FROM nvcr.io/nvidia/cudagl:10.1-devel-ubuntu18.04
+FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
 
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
@@ -93,6 +92,13 @@ RUN echo $username0':Ahsheel7' | chpasswd
 USER $username0
 WORKDIR /home/$username0/catkin_ws
 
+# Keep persistent VScode extensions:
+# https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
+ARG USERNAME=mgsa
+RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
+    && chown -R $USERNAME \
+        /home/$USERNAME/.vscode-server
+
 #RUN echo "source /home/$username0/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
@@ -105,14 +111,6 @@ ENV ROS_DISTRO melodic
 ENV PATH /usr/local/nvidia/bin:${PATH}
 ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
 ENV USER=$username0
-
-# nvidia-docker hooks
-#LABEL com.nvidia.volumes.needed="nvidia_driver"
-#ENV PATH /usr/local/nvidia/bin:${PATH}
-#ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
-
-# Some QT-Apps/Gazebo don't show controls without this
-ENV QT_X11_NO_MITSHM 1
 
 COPY --chown=$username0 entrypoint.sh /home/entrypoint.sh
 RUN ipython profile create

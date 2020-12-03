@@ -50,20 +50,20 @@ echo "export ROSPORT=$ROSPORT" >> ~/.bashrc
 
 # Docker run arguments (depending if we run detached or not)
 if [ "$detach" = true ] ; then
-    docker_args="-d --gpus all -it --rm --shm-size=64g "
+    docker_args="-d -it --rm --shm-size=64g "
 else
     if [ "$nohup" = true ] ; then
-        docker_args="--gpus all -i --rm --shm-size=64g " 
+        docker_args="-i --rm --shm-size=64g " 
     else
-        docker_args="--gpus all -it --rm --shm-size=64g "
+        docker_args="-it --rm --shm-size=64g "
     fi
 fi
 
 #docker_args="-it --rm --runtime=nvidia "
 
 # Volumes (modify with your own path here)
-volumes="-v /home/$USER/Experiments/2-MyhalSim/MyhalSimulator:/home/$USER/catkin_ws \
--v /home/$USER/Experiments/2-MyhalSim/Simulation:/home/$USER/Myhal_Simulation "
+volumes="-v /home/$USER/MyhalSimulator:/home/$USER/catkin_ws \
+-v /home/$USER/MyHal_Simulation/simulated_runs:/home/$USER/Myhal_Simulation "
 
 # Additional arguments to be able to open GUI
 XSOCK=/tmp/.X11-unix
