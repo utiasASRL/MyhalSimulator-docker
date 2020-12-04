@@ -9,14 +9,21 @@ Two docker image folders are provided: `docker_ros_melodic` and `docker_ros_noet
 
  
 # Installation
-## Setup the files
-Clone this repository and the source code for the simulator in an experiment folder of your choice that we call `EXP_ROOT_PATH` in the following. In addition, create a folder to store the experimental data after each run of the simulator.
+
+## Prerequisite
+
+This repo was tested with Ubuntu 18.04. You need to have docker engine installed. See [instructions here ](https://docs.docker.com/engine/install/).
+
+Optionnally, if you have a nvidia GPU, make sure you have installed the nvidia drivers for your card. Then you need to [install nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
+
+
+## Setup the file structure
+Clone this repository and the source code for the simulator in an experiment folder of your choice that we call `EXP_ROOT_PATH` in the following. 
 
 ```bash
 cd [EXP_ROOT_PATH]
 git clone https://github.com/utiasASRL/MyhalSimulator
 git clone https://github.com/utiasASRL/MyhalSimulator-docker
-mkdir -p Myhal_Simulation/simulated_runs
 ```
 
 ## Build the docker images
@@ -27,44 +34,13 @@ cd MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
 ./docker_melodic.sh
 ``` 
 
-## Check the volumes paths
-The scripts running containers with the images you just built use volumes linking the implementation folder and the data folder to the containers' filesystems. The paths to these volumes are hardcoded and need to be modified to match tour file structure. 
-
-In `melodic_docker.sh` and `classification_test.sh`, modify the follwing lines:
-
-```
-# Volumes (modify with your own path here)
-volumes="-v /EXP_ROOT_PATH/MyhalSimulator:/home/$USER/catkin_ws \
--v /EXP_ROOT_PATH/Myhal_Simulation/simulated_runs:/home/$USER/Myhal_Simulation "
-```
-
-## Run with nvidia gpu (Optional)
-
-If you have a nvidia gpu, the simulator can use it. First make sure you have installed the nvidia drivers for your card. Then you need to  [install nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
-
-Now, you should be able to uncomment the following line in `melodic_docker.sh`:
-
-```bash
-# Running on gpu (Uncomment to enable gpu)
-# docker_args="${docker_args} --gpus all "
-```
-
 ## Compile simulator with command line
 You can compile the simulator in command line, but we advise to use the developpement environment below if you plan to make modifications to the code.
 
 ```bash
-cd /EXP_ROOT_PATH/MyhalSimulator-docker/
+cd /EXP_ROOT_PATH/MyhalSimulator/docker_scripts
 ./melodic_docker.sh -c "./catkin_maker.sh"
 ```
-
-# Testing the simulator
-Run the following command to test the compiled simulator with the `docker_ros_melodic` image:
-
-```bash
-cd /EXP_ROOT_PATH/MyhalSimulator-docker/
-./melodic_docker.sh -c "./master.sh -ve -m 2 -t A_tour -p Sc1_params"
-```
-
  
 # Set up a development environment
 
@@ -92,15 +68,20 @@ VSCode provides automated tasks, for example for compilation. These tasks are de
 Just press `ctrl+maj+b` to compile the simulator code (much simpler than using the command line above).
 
 
+
 # Scripts description
+
+The running scripts are located in `EXP_ROOT_PATH/MyhalSimulator/docker_scripts`. Here is a brief description
+
+
 ## Run Files
 
 Filename | Description 
 --- | --- 
-`melodic_docker.sh` | Starts a container on the `docker_ros_melodic` image. This is the main file to start the simulation with a robot performing a tour (see MyhalSimulator repo for details). Tip: you can use this as is to start a container and attach it to a Visual Studio Code workspace.
-`noetic_docker.sh` |  Start a container on the `docker_ros_noetic` image. (Same tip with vscode)
-`classification_test.sh` | Start two containers on `docker_ros_melodic` and  `docker_ros_noetic` images. This script is used in the same way as `melodic_docker.sh` but only if we need deep network predictions.
-`classification_test_2.sh` | Same as above but the two containers are started in a different order. Ignore this one
+`melodic_docker.sh` | Starts a container on the `docker_ros_melodic` image. This is the main file to start the simulation with a robot performing a tour (see MyhalSimulator repo for details). 
+`noetic_docker.sh` |  Start a container on the `docker_ros_noetic` image. 
+`double_docker.sh` | Start two containers on `docker_ros_melodic` and  `docker_ros_noetic` images. This script is used in the same way as `melodic_docker.sh` but only if we need deep network predictions.
+`double_docker_2.sh` | Same as above but the two containers are started in a different order. Ignore this one
 
 
 ## Run multiple expriments
@@ -110,14 +91,11 @@ Filename | Description
 `nohup_multi_tours.sh` | Runs the `multi_tours.sh` in nohup mode so that you can close your ssh session and let the code run on the remote machine
 
 
-
 ## Debug scripts
 Filename | Description 
 --- | --- 
 `connect_to_container.sh` | Open a Bash terminal inside the container)
 `root_in_container.sh` | Open a root Bash terminal inside the container **Use with caution**
-`dashboard_docker.sh` | Old file - ignore
-
 
 
 To avoid ROS master conflicts when running multiple ROS containers on the same machine, the running scripts will incremement a local variable called `ROSPORT`. If not initially set, it will default to 1100. `export ROSPORT=<value>` will be appended to your ~/.bashrc file, over-writing a previous `export ROSPORT` statement if it is there. 
