@@ -91,6 +91,10 @@ VSCode provides automated tasks, for example for compilation. These tasks are de
 
 Just press `ctrl+maj+b` to compile the simulator code (much simpler than using the command line above).
 
+## Noetic dev container
+
+The same can be done with the noetic container and `/EXP_ROOT_PATH/MyhalSimulator-DeepPreds/noetic.code-workspace`
+
 
 
 # Scripts description
