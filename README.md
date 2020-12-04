@@ -48,8 +48,9 @@ In order for the simulator to be able to run with `docker_ros_melodic` image, th
 ## Compiling the simulator in the container
 
 Install [Visual Studio Code (vscode)](https://code.visualstudio.com/download) and its extentions **Docker** and **Remote-Containers**.
+
 We will set up vscode to work inside a container built on our image `docker_ros_melodic`. 
-Open vscode: Files > Open worspace and navigate to `/MyhalSimulator/melodic-TourGuide.code-workspace`.
+Open vscode: 'Files' > 'Open worspace' and navigate to `/MyhalSimulator/melodic-TourGuide.code-workspace`.
 
 
 The `.devcontainer/devcontainer.json` give vscode information about which image to build a container from and the extensions that should be downloaded in the containerized vscode environment.
@@ -86,11 +87,11 @@ If this is the first time you build the container, you might have to chose `Remo
 
 ## Build the simulator in the containerized environment
 Press `ctrl+B` to build the simulator in the container. 
-Your developping environment is now ready!
+Your development environment is now ready!
 
 
 # Testing the simulator
-To test the simulator with the `docker_ros_melodic` image, run `./melodic_docker.sh`.
+Run the following command to test the simulator with the `docker_ros_melodic` image:
 
 ```bash
 cd ~/MyhalSimulator-docker/
@@ -109,7 +110,6 @@ Filename | Description
 `classification_test_2.sh` | Same as above but the two containers are started in a different order. Ignore this one
 
 
-
 ## Run multiple expriments
 Filename | Description 
 --- | --- 
@@ -126,7 +126,9 @@ Filename | Description
 `dashboard_docker.sh` | Old file - ignore
 
 
+
 To avoid ROS master conflicts when running multiple ROS containers on the same machine, the running scripts will incremement a local variable called `ROSPORT`. If not initially set, it will default to 1100. `export ROSPORT=<value>` will be appended to your ~/.bashrc file, over-writing a previous `export ROSPORT` statement if it is there. 
+
 To ensure that the enviroment variable is changed in your local terminal, either run the script with `source melodic_docker.sh`, or after running a script use `source ~/.bashrc`.
 
 ### Melodic and Noetic Flags
