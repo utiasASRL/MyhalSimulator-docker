@@ -59,7 +59,8 @@ else
     fi
 fi
 
-#docker_args="-it --rm --runtime=nvidia "
+# Running on gpu (Uncomment to enable gpu)
+# docker_args="${docker_args} --gpus all "
 
 # Volumes (modify with your own path here)
 volumes="-v /home/$USER/MyhalSimulator:/home/$USER/catkin_ws \
