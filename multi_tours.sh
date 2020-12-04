@@ -49,7 +49,7 @@ do
             echo "|"
             echo ""
             if [ "$ARGS" = "-fe"] ; then
-              ./classification_test.sh -c "./master.sh $ARGS -m $MAPPING -t $TOUR -p$PARAMS"
+              ./classification_test.sh -c "./master.sh $ARGS -m $MAPPING -t $TOUR -p $PARAMS"
             else
               ./melodic_docker.sh $nohup_arg -c "./master.sh $ARGS -m $MAPPING -t $TOUR -p $PARAMS"
             fi

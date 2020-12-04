@@ -79,7 +79,7 @@ other_args="-v $XSOCK:$XSOCK \
     -e ROSPORT=$rosport "
 
 
-# Go (Example of commad: ./master.sh -ve -m 2 -p Sc1_params -t A_tour)
+# Execute the command in docker (Example of command: ./master.sh -ve -m 2 -p Sc1_params -t A_tour)
 docker run $docker_args \
 $volumes \
 $other_args \
