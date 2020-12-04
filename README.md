@@ -76,32 +76,8 @@ Install [Visual Studio Code (vscode)](https://code.visualstudio.com/download) an
 
 We will set up vscode to work inside a container built on our image `docker_ros_melodic`. Open vscode: 'Files' > 'Open worspace' and navigate to `/EXP_ROOT_PATH/MyhalSimulator/melodic-TourGuide.code-workspace`.
 
-The `.devcontainer.json` give vscode information about which image to build a container from and the extensions that should be downloaded in the containerized vscode environment. In the same way as `melodic_docker.sh`, it also set volumes that you need to change according to your file structure. In addition, the name of the image is hardcoded and need to be modified.
+The `.devcontainer/devcontainer.json` gives vscode information about which image to build a container from and the extensions that should be downloaded in the containerized vscode environment. In the same way as `melodic_docker.sh`, it also sets volumes but with relative path so you should not need to modify anything in it.
 
-Some information is hardcoded and should be modified. You should replace the `USER` flags with your system username, and modify the paths for `workspaceMount`, `workspaceFolder` and `"mounts":`
-
-```
-{
-	"image": "docker_ros_melodic_USER",
-	
-    "workspaceMount": "source=/home/USER/MyhalSimulator,target=/home/USER/catkin_ws,type=bind,consistency=cached",
-    "workspaceFolder": "/home/USER/catkin_ws",
-    "mounts": [
-      "source=/home/USER/Myhal_Simulation,target=/home/USER/Myhal_Simulation,type=bind,consistency=cached"
-          ],
-	"extensions": [
-		"ms-vscode.cpptools",
-		"twxs.cmake",
-		"ms-vscode.cmake-tools",
-		"ms-azuretools.vscode-docker",
-		"ms-toolsai.jupyter",
-		"ms-python.python",
-		"ms-iot.vscode-ros",
-		"redhat.vscode-xml",
-		"dotjoshjohnson.xml"
-	]
-}
-```
 
 ## Build / Rebuild the container environment
 Now that the simulator files are ready in vscode, we can build the containerized vscode environment. 
@@ -111,7 +87,7 @@ If this is the first time you build the container, you might have to chose `Remo
 
 ## Compiling the simulator in the container
 
-VSCode provides automated tasks, for example for compilation. These tasks are defined in `.vscode/tasks.json`. AS yopu can see, the catkin_build task is already defined in the provided tasks file.
+VSCode provides automated tasks, for example for compilation. These tasks are defined in `.vscode/tasks.json`. As you can see, the **catkin_build** task is already defined in the provided tasks file.
 
 Just press `ctrl+maj+b` to compile the simulator code (much simpler than using the command line above).
 
