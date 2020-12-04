@@ -1,8 +1,10 @@
-FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
+#FROM nvcr.io/nvidia/cuda:10.1-cudnn7-runtime
+FROM nvcr.io/nvidia/cudagl:10.1-devel-ubuntu18.04
 
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
 RUN DEBIAN_FRONTEND=noninteractive
+#
 
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
@@ -106,6 +108,14 @@ RUN echo "export GAZEBO_MODEL_PATH=${GAZEBO_MODEL_PATH}:/home/$username0/catkin_
 RUN echo "export GAZEBO_RESOURCE_PATH=${GAZEBO_RESOURCE_PATH}:/home/$username0/catkin_ws/src/myhal_simulator/models" >> ~/.bashrc
 RUN echo "export GAZEBO_PLUGIN_PATH=${GAZEBO_PLUGIN_PATH}:/home/$username0/catkin_ws/devel/lib" >> ~/.bashrc
 RUN echo "export USER=$username0" >> ~/.bashrc
+
+# nvidia-docker hooks
+#LABEL com.nvidia.volumes.needed="nvidia_driver"
+#ENV PATH /usr/local/nvidia/bin:${PATH}
+#ENV LD_LIBRARY_PATH /usr/local/nvidia/lib:/usr/local/nvidia/lib64:${LD_LIBRARY_PATH}
+
+# Some QT-Apps/Gazebo don't show controls without this
+ENV QT_X11_NO_MITSHM 1
 
 ENV ROS_DISTRO melodic
 ENV PATH /usr/local/nvidia/bin:${PATH}
