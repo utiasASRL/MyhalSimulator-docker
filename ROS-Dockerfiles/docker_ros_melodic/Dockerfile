@@ -4,7 +4,7 @@ FROM nvcr.io/nvidia/cudagl:10.1-devel-ubuntu18.04
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
 RUN DEBIAN_FRONTEND=noninteractive
-#
+
 
 RUN apt update
 RUN apt upgrade -y --no-install-recommends
