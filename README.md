@@ -34,6 +34,26 @@ cd MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
 ./docker_melodic.sh
 ``` 
 
+## Test the simulator
+Run the following command to test the compiled simulator with the `docker_ros_melodic` image:
+
+```bash
+cd /EXP_ROOT_PATH/MyhalSimulator-docker/
+./melodic_docker.sh -c "./master.sh -ve -m 2 -t A_tour -p Sc1_params"
+```
+
+## Run with nvidia gpu (Optional)
+
+If you have a nvidia gpu, the simulator can use it. First make sure you have installed the nvidia drivers for your card. Then you need to [install nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
+
+Now, you should be able to uncomment the following line in `melodic_docker.sh`:
+
+```bash
+# Running on gpu (Uncomment to enable gpu)
+# docker_args="${docker_args} --gpus all "
+```
+
+
 ## Compile simulator with command line
 You can compile the simulator in command line, but we advise to use the developpement environment below if you plan to make modifications to the code.
 
