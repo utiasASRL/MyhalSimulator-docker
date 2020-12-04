@@ -24,14 +24,17 @@ Clone this repository and the source code for the simulator in an experiment fol
 cd [EXP_ROOT_PATH]
 git clone https://github.com/utiasASRL/MyhalSimulator
 git clone https://github.com/utiasASRL/MyhalSimulator-docker
+git clone https://github.com/utiasASRL/MyhalSimulator-DeepPreds
 ```
 
 ## Build the docker images
 Execute `/docker_build.sh` to build either the `docker_ros_melodic` or the `docker_ros_noetic` docker images. Always use the provided scripts which set the right user and id for permissions.
 
 ```bash
-cd MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
-./docker_melodic.sh
+cd EXP_ROOT_PATH/MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
+./docker_build.sh
+cd EXP_ROOT_PATH/MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_noetic/
+./docker_build.sh
 ``` 
 
 ## Test the simulator
@@ -53,6 +56,7 @@ Now, you should be able to uncomment the following line in `melodic_docker.sh`:
 # docker_args="${docker_args} --gpus all "
 ```
 
+Note that this is mandatory for the noetic docker as the network predictions need a GPU to be computed.
 
 ## Compile simulator with command line
 You can compile the simulator in command line, but we advise to use the developpement environment below if you plan to make modifications to the code.
