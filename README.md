@@ -8,19 +8,19 @@ Two docker image folders are provided: `docker_ros_melodic` and `docker_ros_noet
  - `docker_ros_noetic` contains the dockerfile that builds the ROS noetic docker image. This image is used to run the deep learning prediction. We can connect a container running on this image to the main container (running on the melodic image). This container will recieve the lidar point clouds, perform deep predictions, and publish the classifications. The main container will use this classifications
 
  
-# Usage
-## Installation
-Clone this repository and the source code for the simulator. We also create a folder to store the experimental data after each run of the simulator.
+# Installation
+## Setup the files
+Clone this repository and the source code for the simulator in an experiment folder of your choice that we call `EXP_ROOT_PATH` in the following. In addition, create a folder to store the experimental data after each run of the simulator.
 
 ```bash
-cd ~
+cd [EXP_ROOT_PATH]
 git clone https://github.com/utiasASRL/MyhalSimulator
 git clone https://github.com/utiasASRL/MyhalSimulator-docker
 mkdir -p Myhal_Simulation/simulated_runs
 ```
 
 ## Build the docker images
-Execute `/docker_build.sh` to build either the `docker_ros_melodic` or the `docker_ros_noetic` docker images. 
+Execute `/docker_build.sh` to build either the `docker_ros_melodic` or the `docker_ros_noetic` docker images. Always use the provided scripts which set the right user and id for permissions.
 
 ```bash
 cd MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
@@ -28,34 +28,58 @@ cd MyhalSimulator-docker/ROS-Dockerfiles/docker_ros_melodic/
 ``` 
 
 ## Check the volumes paths
-Some docker volume local paths are hardcoded. This can lead to errors when the docker image try to access the volumes. To solve this, you should modify the local volume paths to match your file structure. 
+The scripts running containers with the images you just built use volumes linking the implementation folder and the data folder to the containers' filesystems. The paths to these volumes are hardcoded and need to be modified to match tour file structure. 
 
-For example, here in `/MyhalSimulator-docker/melodic_docker.sh`:
+In `melodic_docker.sh` and `classification_test.sh`, modify the follwing lines:
 
 ```
 # Volumes (modify with your own path here)
-volumes="-v /YOUR_PATH_TO_THE_SIMULATOR_CODE/MyhalSimulator:/home/$USER/catkin_ws \
--v /YOUR_PATH_TO_THE_SIMULATION_FOLDER/MyHal_Simulation/simulated_runs:/home/$USER/Myhal_Simulation "
+volumes="-v /EXP_ROOT_PATH/MyhalSimulator:/home/$USER/catkin_ws \
+-v /EXP_ROOT_PATH/Myhal_Simulation/simulated_runs:/home/$USER/Myhal_Simulation "
 ```
 
-In order for the simulator to be able to run with `docker_ros_melodic` image, the volume paths must be corrected in `MyhalSimulator-docker/melodic_docker.sh` and in `MyhalSimulator-docker/classification_test.sh`.
+## Run with nvidia gpu (Optional)
 
-## (Optional) Remove the --gpus flags
-?
+If you have a nvidia gpu, the simulator can use it. First make sure you have installed the nvidia drivers for your card. Then you need to  [install nvidia-docker](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html#docker).
+
+Now, you should be able to uncomment the following line in `melodic_docker.sh`:
+
+```bash
+# Running on gpu (Uncomment to enable gpu)
+# docker_args="${docker_args} --gpus all "
+```
+
+## Compile simulator with command line
+You can compile the simulator in command line, but we advise to use the developpement environment below if you plan to make modifications to the code.
+
+```bash
+cd /EXP_ROOT_PATH/MyhalSimulator-docker/
+./melodic_docker.sh -c "./catkin_maker.sh"
+```
+
+# Testing the simulator
+Run the following command to test the compiled simulator with the `docker_ros_melodic` image:
+
+```bash
+cd /EXP_ROOT_PATH/MyhalSimulator-docker/
+./melodic_docker.sh -c "./master.sh -ve -m 2 -t A_tour -p Sc1_params"
+```
 
  
-# Set up the development environment
-## Compiling the simulator in the container
+# Set up a development environment
 
-Install [Visual Studio Code (vscode)](https://code.visualstudio.com/download) and its extentions **Docker** and **Remote-Containers**.
+## Using VSCode in a dev container
 
-We will set up vscode to work inside a container built on our image `docker_ros_melodic`. 
-Open vscode: 'Files' > 'Open worspace' and navigate to `/MyhalSimulator/melodic-TourGuide.code-workspace`.
+With VSCode, you can develop your code directly within a container. This way, you can use nice code features like auto-completions, variable types, etc.  
 
+Install [Visual Studio Code (vscode)](https://code.visualstudio.com/download) and open it. In the software, you can now install the extentions **Docker** and **Remote-Containers**.
 
-The `.devcontainer/devcontainer.json` give vscode information about which image to build a container from and the extensions that should be downloaded in the containerized vscode environment.
+We will set up vscode to work inside a container built on our image `docker_ros_melodic`. Open vscode: 'Files' > 'Open worspace' and navigate to `/EXP_ROOT_PATH/MyhalSimulator/melodic-TourGuide.code-workspace`.
+
+The `.devcontainer.json` give vscode information about which image to build a container from and the extensions that should be downloaded in the containerized vscode environment. In the same way as `melodic_docker.sh`, it also set volumes that you need to change according to your file structure. In addition, the name of the image is hardcoded and need to be modified.
 
 Some information is hardcoded and should be modified. You should replace the `USER` flags with your system username, and modify the paths for `workspaceMount`, `workspaceFolder` and `"mounts":`
+
 ```
 {
 	"image": "docker_ros_melodic_USER",
@@ -85,18 +109,11 @@ Now that the simulator files are ready in vscode, we can build the containerized
 In vscode, press `F1` to open the command editor, and type `Remote-Containers: Rebuild containers...`
 If this is the first time you build the container, you might have to chose `Remote-Containers: Open folder in containers...`
 
-## Build the simulator in the containerized environment
-Press `ctrl+B` to build the simulator in the container. 
-Your development environment is now ready!
+## Compiling the simulator in the container
 
+VSCode provides automated tasks, for example for compilation. These tasks are defined in `.vscode/tasks.json`. AS yopu can see, the catkin_build task is already defined in the provided tasks file.
 
-# Testing the simulator
-Run the following command to test the simulator with the `docker_ros_melodic` image:
-
-```bash
-cd ~/MyhalSimulator-docker/
-./melodic_docker.sh -c "./master.sh -ve -m 2 -t A_tour -p Sc1_params"
-```
+Just press `ctrl+maj+b` to compile the simulator code (much simpler than using the command line above).
 
 
 # Scripts description
@@ -137,4 +154,4 @@ To ensure that the enviroment variable is changed in your local terminal, either
 
 -c [arg], will run the argument as a command in the container 
 
-For example calling `source melodic_docker.sh -c "catkin build" -d` will run `catkin build` in a detached ROS melodic docker container.
+For example calling `./melodic_docker.sh -c "./catkin_maker.sh" -d` will run the compile command `"./catkin_maker.sh"` in a detached ROS melodic docker container.
