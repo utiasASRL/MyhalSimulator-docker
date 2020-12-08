@@ -95,10 +95,10 @@ WORKDIR /home/$username0/catkin_ws
 
 # Keep persistent VScode extensions:
 # https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
-ARG USERNAME=mgsa
-RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
-    && chown -R $USERNAME \
-        /home/$USERNAME/.vscode-server
+#ARG USERNAME=mgsa
+#RUN mkdir -p /home/$USERNAME/.vscode-server/extensions \
+#    && chown -R $USERNAME \
+#        /home/$USERNAME/.vscode-server
 
 #RUN echo "source /home/$username0/catkin_ws/devel/setup.bash" >> ~/.bashrc
 
