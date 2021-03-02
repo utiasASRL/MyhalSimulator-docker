@@ -2,6 +2,12 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../../../docker"
+		},
+		{
+			"path": "../MyhalSimulator"
 		}
 	],
 	"settings": {
