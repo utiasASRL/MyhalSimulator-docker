@@ -18,7 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive
 # Install preliminary packages
 RUN apt-get update
 RUN apt-get upgrade -y --no-install-recommends
-RUN apt-get install gcc g++ python3 python3-pip python3-dev -y --no-install-recommends
+RUN apt-get install gcc g++ python3 python3-pip python3-dev vtk7 -y --no-install-recommends
 RUN apt-get install gedit firefox wget git xvfb vim nano -y --no-install-recommends
 RUN apt-get update
 RUN apt-get upgrade -y --no-install-recommends
@@ -28,14 +28,53 @@ RUN pip3 install --upgrade pip
 RUN pip3 install setuptools
 RUN pip3 install numpy scikit-learn matplotlib PyYAML
 
+# Install pypcd
+RUN pip3 install --upgrade git+https://github.com/klintan/pypcd.git
+RUN pip3 install imageio
+
 # Install PyTorch
 RUN pip3 install torch==1.7.1+cu110 torchvision==0.8.2+cu110 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
-
 
 # Install QT
 RUN pip3 install PyQt5
 RUN apt-get install pyqt5-dev-tools pyqt5-dev -y --no-install-recommends
 
+
+# Install cmake
+WORKDIR /workspace/compiled_libs/
+RUN apt remove --purge --auto-remove cmake -y
+RUN wget https://cmake.org/files/v3.19/cmake-3.19.6.tar.gz
+
+RUN tar -xzvf cmake-3.19.6.tar.gz
+WORKDIR /workspace/compiled_libs/cmake-3.19.6
+RUN apt-get install build-essential libssl-dev -y --no-install-recommends
+RUN ./bootstrap
+RUN make -j$(nproc)
+RUN make install
+
+# Compile open3D from source
+WORKDIR /workspace/compiled_libs
+RUN apt-get install libosmesa6-dev -y --no-install-recommends
+RUN git clone --recursive --progress https://github.com/intel-isl/Open3D
+
+# Install open3D
+WORKDIR /workspace/compiled_libs/Open3D/build
+RUN apt-get install xorg-dev libglu1-mesa-dev libgl1-mesa-glx libglew-dev \
+                    libglfw3-dev libjsoncpp-dev libeigen3-dev libpng-dev libjpeg-dev python-dev \
+                    python3-dev python-tk python3-tk  -y --no-install-recommends
+RUN cmake -DPYTHON_EXECUTABLE=/usr/bin/python3 \
+-DENABLE_HEADLESS_RENDERING=ON \
+-DENABLE_GUI=OFF \
+-DBUILD_GLEW=ON \
+-DBUILD_GLFW=ON \
+..
+RUN make -j$(nproc)
+RUN pip3 install wheel
+RUN make install-pip-package
+
+# Additionnal stuff
+RUN apt install ffmpeg -y --no-install-recommends
+RUN pip3 install imageio imageio-ffmpeg
 
 # Install ROS 
 RUN apt-get update
@@ -96,6 +135,8 @@ RUN apt-get install ffmpeg -y --no-install-recommends
 RUN apt-get install xdg-utils -y --no-install-recommends
 RUN apt-get install vim-gtk -y --no-install-recommends
 RUN pip install moviepy
+
+RUN apt-get install python3-catkin-tools python3-osrf-pycommon
 
 # RUN apt-get install libnvidia-gl-430:i386
 
