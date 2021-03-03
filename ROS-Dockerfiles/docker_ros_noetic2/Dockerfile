@@ -136,7 +136,7 @@ RUN apt-get install xdg-utils -y --no-install-recommends
 RUN apt-get install vim-gtk -y --no-install-recommends
 RUN pip install moviepy
 
-RUN apt-get install python3-catkin-tools python3-osrf-pycommon
+RUN apt-get install python3-catkin-tools python3-osrf-pycommon -y --no-install-recommends
 
 # RUN apt-get install libnvidia-gl-430:i386
 
